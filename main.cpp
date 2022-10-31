@@ -3,7 +3,26 @@
 #include <regex>
 
 using namespace std;
-#include "BigReal.h"
+#include<iostream>
+#include <string>
+using namespace std;
+class BigReal{
+private:
+    string Whole_number;
+    string Int;
+    string Float;
+    char signNumber;
+public:
+    BigReal (double realNumber = 0.0); // Default constructor
+    BigReal (string realNumber);
+    BigReal (BigDecimalInt bigInteger);
+    BigReal (const BigReal& other); // Copy constructor
+    BigReal (BigReal&& other); // Move constructor
+    BigReal& operator= (BigReal& other); // Assignment operator
+    BigReal& operator= (BigReal&& other); // Move assignment
+
+
+};
 int carry = 0, borrow = 0;
 // Default Constructor
 BigReal::BigReal() {
