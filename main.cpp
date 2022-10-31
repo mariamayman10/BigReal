@@ -3,25 +3,7 @@
 #include <regex>
 
 using namespace std;
-
-class BigReal{
-private:
-    string Whole_number;
-    string Int;
-    string Float;
-    char signNumber;
-
-public:
-    BigReal();
-    BigReal(string num);
-    bool checkValidInput(string input);
-    BigReal operator + (BigReal number2);
-    BigReal operator - (BigReal anotherDec);
-    friend ostream &operator << (ostream &out, BigReal num);
-    int size();
-    int sign();
-    string getNumber();
-};
+#include "BigReal.h"
 int carry = 0, borrow = 0;
 // Default Constructor
 BigReal::BigReal() {
