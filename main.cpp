@@ -396,6 +396,7 @@ BigReal ::BigReal(string number)
     else
     {
         cout << "Invalid, Try again";
+        exit(1);
     }
 }
 bool BigReal ::checkValidInput(string input)
@@ -491,7 +492,6 @@ BigReal BigReal ::operator+(BigReal anotherDec)
     res = Whole_Number1 + Whole_Number2;
     string FinalResult = res.getNumber();
 
-    cout << (before_dot1.length() + after_dot1.length()) - FinalResult.length() << endl;
     ///////////////////////////////
     for (int i = 0; i < ((before_dot1.length() + after_dot1.length()) - res.getNumber().length()); i++)
     {
@@ -508,6 +508,14 @@ BigReal BigReal ::operator+(BigReal anotherDec)
     }
     string before_dot = FinalResult.substr(0, dot_position);
     string after_dot = FinalResult.substr((dot_position - 1) + 1);
+    for (int i = after_dot.length()-1; i > -1; --i) {
+        if(after_dot[i] == '0'){
+            after_dot.erase(i, 1);
+        }
+        else{
+            break;
+        }
+    }
     Final_Result.Before_point = before_dot;
     Final_Result.After_point = after_dot;
     if (res.sign())
@@ -578,6 +586,23 @@ BigReal BigReal ::operator-(BigReal anotherDec)
     }
     string before_dot = FinalResult.substr(0, dot_position);
     string after_dot = FinalResult.substr((dot_position - 1) + 1);
+    int check = 0;
+    for (int i = 0; i < before_dot.length(); ++i) {
+        if(before_dot[i] == '0'){
+            check++;
+        }
+    }
+    if(check == before_dot.length()){
+        before_dot = "0";
+    }
+    for (int i = after_dot.length()-1; i > -1; --i) {
+        if(after_dot[i] == '0'){
+            after_dot.erase(i, 1);
+        }
+        else{
+             break;
+        }
+    }
     Final_Result.Before_point = before_dot;
     Final_Result.After_point = after_dot;
     if (res.sign())
@@ -673,10 +698,10 @@ bool BigReal ::operator==(BigReal anotherDec)
 
 int main()
 {
- BigReal a ,b;
+    BigReal a ,b;
     cin>>a >>b;
     cout<<"< test: "<<(a<b);
     cout<<"\n> test: "<<(a>b);
-    cout<<"\n== test: "<<(a==b)<<endl;
-    cout<<"result : "<<a-b;
+    cout<<"\n+ test: " << (a+b)<<endl;
+    cout<<"result : "<< a-b ;
 }
