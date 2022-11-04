@@ -374,8 +374,6 @@ BigReal ::BigReal(string number)
         {
             signNumber = '+';
         }
-        Int = signNumber;
-        Float = signNumber;
         int i = 0;
         while (number[i] != '.')
         {
@@ -449,15 +447,15 @@ string BigReal ::getRNumber()
 {
     return signNumber + Before_point.getNumber() + '.' + After_point.getNumber();
 }
-BigReal BigReal ::operator+(BigReal anotherDec)
+BigReal BigReal ::operator+(BigReal anotherReal)
 {
     BigDecimalInt Whole_Number1, Whole_Number2, res;
     BigReal Final_Result;
     int dot_position = 0;
     string before_dot1, before_dot2, after_dot1, after_dot2;
-    after_dot2 = anotherDec.After_point.getNumber();
+    after_dot2 = anotherReal.After_point.getNumber();
     after_dot1 = After_point.getNumber();
-    before_dot2 = anotherDec.Before_point.getNumber();
+    before_dot2 = anotherReal.Before_point.getNumber();
     before_dot1 = Before_point.getNumber();
     while (before_dot1.size() > before_dot2.size())
     {
@@ -476,28 +474,21 @@ BigReal BigReal ::operator+(BigReal anotherDec)
         after_dot1 += "0";
     }
     string whole_number1 = signNumber + before_dot1 + after_dot1;
-    string whole_number2 = anotherDec.signNumber + before_dot2 + after_dot2;
+    string whole_number2 = anotherReal.signNumber + before_dot2 + after_dot2;
     Whole_Number1.setNumber(whole_number1);
     Whole_Number2.setNumber(whole_number2);
     Whole_Number1.setSign(signNumber);
-    Whole_Number2.setSign(anotherDec.signNumber);
-    if (dot_pos > anotherDec.dot_pos)
+    Whole_Number2.setSign(anotherReal.signNumber);
+    if (dot_pos > anotherReal.dot_pos)
     {
         dot_position = dot_pos;
     }
     else
     {
-        dot_position = anotherDec.dot_pos;
+        dot_position = anotherReal.dot_pos;
     }
     res = Whole_Number1 + Whole_Number2;
     string FinalResult = res.getNumber();
-
-    ///////////////////////////////
-    for (int i = 0; i < ((before_dot1.length() + after_dot1.length()) - res.getNumber().length()); i++)
-    {
-        FinalResult = "0" + FinalResult;
-    }
-    //////////////////////////////
     if (FinalResult.size() < Whole_Number1.size())
     {
         dot_position -= (Whole_Number1.size() - FinalResult.size());
@@ -508,8 +499,28 @@ BigReal BigReal ::operator+(BigReal anotherDec)
     }
     string before_dot = FinalResult.substr(0, dot_position);
     string after_dot = FinalResult.substr((dot_position - 1) + 1);
+    int check = 0;
+    for (char i : before_dot) {
+        if(i == '0'){
+            check++;
+        }
+    }
+    if(check == before_dot.length()){
+        before_dot = "0";
+    }
+    else{
+        for (int i = 0; i < before_dot.length(); ++i) {
+            if(before_dot[i] == '0'){
+                before_dot.erase(i, 1);
+                i--;
+            }
+            else{
+                break;
+            }
+        }
+    }
     for (int i = after_dot.length()-1; i > -1; --i) {
-        if(after_dot[i] == '0'){
+        if(after_dot[i] == '0' && after_dot.length() > 1){
             after_dot.erase(i, 1);
         }
         else{
@@ -528,15 +539,15 @@ BigReal BigReal ::operator+(BigReal anotherDec)
     }
     return Final_Result;
 }
-BigReal BigReal ::operator-(BigReal anotherDec)
+BigReal BigReal ::operator-(BigReal anotherReal)
 {
     BigDecimalInt Whole_Number1, Whole_Number2, res;
     BigReal Final_Result;
     int dot_position = 0;
     string before_dot1, before_dot2, after_dot1, after_dot2;
-    after_dot2 = anotherDec.After_point.getNumber();
+    after_dot2 = anotherReal.After_point.getNumber();
     after_dot1 = After_point.getNumber();
-    before_dot2 = anotherDec.Before_point.getNumber();
+    before_dot2 = anotherReal.Before_point.getNumber();
     before_dot1 = Before_point.getNumber();
     while (before_dot1.size() > before_dot2.size())
     {
@@ -555,27 +566,21 @@ BigReal BigReal ::operator-(BigReal anotherDec)
         after_dot1 += "0";
     }
     string whole_number1 = signNumber + before_dot1 + after_dot1;
-    string whole_number2 = anotherDec.signNumber + before_dot2 + after_dot2;
-    Whole_Number1.setNumber(whole_number1);
-    Whole_Number2.setNumber(whole_number2);
+    string whole_number2 = anotherReal.signNumber + before_dot2 + after_dot2;
+    Whole_Number1.setNumber(whole_number1);//-502
+    Whole_Number2.setNumber(whole_number2);//+632
     Whole_Number1.setSign(signNumber);
-    Whole_Number2.setSign(anotherDec.signNumber);
-    if (dot_pos > anotherDec.dot_pos)
+    Whole_Number2.setSign(anotherReal.signNumber);
+    if (dot_pos > anotherReal.dot_pos)
     {
         dot_position = dot_pos;
     }
     else
     {
-        dot_position = anotherDec.dot_pos;
+        dot_position = anotherReal.dot_pos;
     }
     res = Whole_Number1 - Whole_Number2;
     string FinalResult = res.getNumber();
-    ///////////////////////////////
-    for (int i = 0; i < ((before_dot1.length() + after_dot1.length()) - res.getNumber().length()); i++)
-    {
-        FinalResult = "0" + FinalResult;
-    }
-    //////////////////////////////
     if (FinalResult.size() < Whole_Number1.size())
     {
         dot_position -= (Whole_Number1.size() - FinalResult.size());
@@ -587,20 +592,31 @@ BigReal BigReal ::operator-(BigReal anotherDec)
     string before_dot = FinalResult.substr(0, dot_position);
     string after_dot = FinalResult.substr((dot_position - 1) + 1);
     int check = 0;
-    for (int i = 0; i < before_dot.length(); ++i) {
-        if(before_dot[i] == '0'){
+    for (char i : before_dot) {
+        if(i == '0'){
             check++;
         }
     }
     if(check == before_dot.length()){
         before_dot = "0";
     }
+    else{
+        for (int i = 0; i < before_dot.length(); ++i) {
+            if(before_dot[i] == '0'){
+                before_dot.erase(i, 1);
+                i--;
+            }
+            else{
+                break;
+            }
+        }
+    }
     for (int i = after_dot.length()-1; i > -1; --i) {
-        if(after_dot[i] == '0'){
+        if(after_dot[i] == '0' && after_dot.length() > 1){
             after_dot.erase(i, 1);
         }
         else{
-             break;
+            break;
         }
     }
     Final_Result.Before_point = before_dot;
