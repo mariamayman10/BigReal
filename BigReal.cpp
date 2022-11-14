@@ -195,7 +195,7 @@ BigDecimalInt BigDecimalInt ::operator+(BigDecimalInt anotherDec)
         {
             right = true;
         }
-        if (!right && result.number[i] == '0')
+        if (!right && result.number[i] == '0' && result.number.length() >= num1.length())
         {
             result.number.erase(i, 1);
             i--;
