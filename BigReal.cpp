@@ -832,28 +832,6 @@ bool BigReal ::operator>(BigReal anotherReal)
 }
 bool BigReal ::operator==(BigReal anotherReal)
 {
-    string b, b2, a, a2;
-
-    b = Before_point.getNumber();a = After_point.getNumber();
-    while(b[0] == '0' && b.length() > 1){
-        b.erase(0, 1);
-    }
-    while(a[a.length() - 1] == '0' && a.length() > 1){
-        a.erase(a.length()-1, 1);
-    }
-    Before_point = b;
-    After_point = a;
-
-    b2 = anotherReal.Before_point.getNumber();a2 = anotherReal.After_point.getNumber();
-    while(b2[0] == '0' && b2.length() > 1){
-        b2.erase(0, 1);
-    }
-    while(a2[a2.length() - 1] == '0' && a2.length() > 1){
-        a2.erase(a2.length()-1, 1);
-    }
-    anotherReal.Before_point = b2;
-    anotherReal.After_point = a2;
-
     if (Before_point == anotherReal.Before_point && After_point == anotherReal.After_point)
     {
         return true;
