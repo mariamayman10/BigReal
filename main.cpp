@@ -11,5 +11,6 @@ int main(){
         option = MenuSystem();
     }
     options(10);
+    return 0;
 }
 
