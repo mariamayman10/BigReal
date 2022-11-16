@@ -1,305 +1,14 @@
 #include "BigReal.h"
-void BigDecimalInt ::setNumber(string num)
-{
-    number = num;
-    if (number[0] == '+')
-    {
-        number.erase(0, 1);
-        signNumber = '+';
-    }
-    else if (number[0] == '-')
-    {
-        number.erase(0, 1);
-        signNumber = '-';
-    }
-    else
-    {
-        signNumber = '+';
-    }
-}
-BigDecimalInt::BigDecimalInt(string num)
-{
-    setNumber(num);
-}
-BigDecimalInt ::BigDecimalInt()
-{
-    number = "0";
-    signNumber = '+';
-}
-bool BigDecimalInt ::operator<(const BigDecimalInt &anotherDec)
-{
-    string comp1, comp2;
-    long long len1 = number.length(), len2 = anotherDec.number.length();
+#include "BigDecimalInt.h"
 
-    while (len1 < len2)
-    {
-        comp1 += '0';
-        len1++;
-    }
-    while (len2 < len1)
-    {
-        comp2 += '0';
-        len2++;
-    }
-    comp1 += number;
-    comp2 += anotherDec.number;
-
-    if (signNumber == '-' && anotherDec.signNumber == '+')
-    {
-        return true;
-    }
-    else if (signNumber == '+' && anotherDec.signNumber == '-')
-    {
-        return false;
-    }
-    else if (signNumber == '+' && anotherDec.signNumber == '+')
-    {
-        return comp1 < comp2;
-    }
-    else
-    {
-        return comp1 > comp2;
-    }
-}
-bool BigDecimalInt ::operator>(const BigDecimalInt &anotherDec)
-{
-    string comp1, comp2;
-    long long len1 = number.length(), len2 = anotherDec.number.length();
-
-    while (len1 < len2)
-    {
-        comp1 += '0';
-        len1++;
-    }
-    while (len2 < len1)
-    {
-        comp2 += '0';
-        len2++;
-    }
-    comp1 += number;
-    comp2 += anotherDec.number;
-
-    if (signNumber == '-' && anotherDec.signNumber == '+')
-    {
-        return false;
-    }
-    else if (signNumber == '+' && anotherDec.signNumber == '-')
-    {
-        return true;
-    }
-    else if (signNumber == '+' && anotherDec.signNumber == '+')
-    {
-        return comp1 > comp2;
-    }
-    else
-    {
-        return comp1 < comp2;
-    }
-}
-bool BigDecimalInt ::operator==(const BigDecimalInt anotherDec)
-{
-    if (signNumber == anotherDec.signNumber && number == anotherDec.number)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-BigDecimalInt &BigDecimalInt ::operator=(BigDecimalInt anotherDec)
-{
-    signNumber = anotherDec.signNumber;
-    number = anotherDec.number;
-    return *this;
-}
-string addition(string num1, string num2)
-{
-    auto it1 = num1.rbegin();
-    auto it2 = num2.rbegin();
-    string res;
-    int carry = 0;
-    while (it1 != num1.rend())
-    {
-        int twoDigitsSum;
-        carry = 0;
-        twoDigitsSum = ((*it1 - '0') + (*it2 - '0') + carry);
-        if (twoDigitsSum >= 10)
-        {
-            carry = 1;
-        }
-        res = char((twoDigitsSum % 10) + '0') + res;
-        *(it1 + 1) = char(((*(it1 + 1) - '0') + carry) + '0');
-        it1++;
-        it2++;
-    }
-    if (carry)
-    {
-        res = char((carry) + '0') + res;
-    }
-    return res;
-}
-string subtraction(string num1, string num2)
-{
-    deque<long long> d;
-    string res;
-    for (long long i = num1.length() - 1; i >= 0; i--)
-    {
-        if (num1[i] < num2[i])
-        {
-            num1[i] = char(((num1[i] - '0') + 10) + '0');
-            num1[i - 1] = char(((num1[i - 1] - '0') - 1) + '0');
-            d.push_front((num1[i] - '0') - (num2[i] - '0'));
-        }
-        else
-        {
-            d.push_front((num1[i] - '0') - (num2[i] - '0'));
-        }
-    }
-
-    for (auto i : d)
-    {
-        res += to_string(i);
-    }
-    return res;
-}
-BigDecimalInt BigDecimalInt ::operator+(BigDecimalInt anotherDec)
-{
-    BigDecimalInt result;
-    char signNumber1 = signNumber, signNumber2 = anotherDec.signNumber;
-    string num1 = number, num2 = anotherDec.number;
-    BigDecimalInt number1 = *this;
-    if (signNumber1 == signNumber2)
-    {
-        result.signNumber = signNumber1;
-        result.number = addition(num1, num2);
-    }
-    else
-    {
-
-        if (number1.signNumber == '-')
-        {
-            number1.signNumber = '+';
-            result = (anotherDec - number1);
-        }
-        else
-        {
-            anotherDec.signNumber = '+';
-            result = (number1 - anotherDec);
-        }
-    }
-    bool right = false;
-    for (long long i = 0; i < result.number.length(); i++)
-    {
-        if (result.number[i] != '-' && result.number[i] != '0')
-        {
-            right = true;
-        }
-        if (!right && result.number[i] == '0' && result.number.length() >= num1.length())
-        {
-            result.number.erase(i, 1);
-            i--;
-        }
-    }
-    return result;
-}
-BigDecimalInt BigDecimalInt ::operator-(BigDecimalInt anotherDec)
-{
-    BigDecimalInt obj;
-    deque<long long> d;
-    string str_min, res;
-    string num1 = number, num2 = anotherDec.number;
-    char sign1 = signNumber, sign2 = anotherDec.signNumber;
-    bool ok = false, is_determined = false;
-    if (num1 < num2)
-    {
-        swap(num1, num2);
-        swap(sign1, sign2);
-        ok = true;
-    }
-
-    if (sign1 == sign2)
-    {
-        res = subtraction(num1, num2);
-        if (sign1 == '-')
-            ok = !ok;
-    }
-    else
-    {
-        res = addition(num1, num2);
-        if (signNumber == '-')
-        {
-            obj.signNumber = '-';
-            is_determined = true;
-        }
-        else
-        {
-            obj.signNumber = '+';
-            is_determined = true;
-        }
-    }
-
-    bool right = false;
-    for (long long i = 0; i < res.length(); i++)
-    {
-        if (res[i] != '-' && res[i] != '0')
-        {
-            right = true;
-        }
-        if (!right && res[i] == '0' && res.length() >= num1.length())
-        {
-            res.erase(i, 1);
-            i--;
-        }
-    }
-
-    if (res.empty())
-        res = "0";
-    if (!is_determined && (ok))
-    {
-        obj.signNumber = '-';
-    }
-    else if (!is_determined)
-    {
-        obj.signNumber = '+';
-    }
-
-    obj.number = res;
-    return obj;
-}
-int BigDecimalInt ::size()
-{
-    return number.size();
-}
-int BigDecimalInt ::sign()
-{
-    if (signNumber == '+')
-    {
-        return 1;
-    }
-    else
-    {
-        return 0;
-    }
-}
-string BigDecimalInt::getNumber()
-{
-    return number;
-}
-void BigDecimalInt::setSign(char s)
-{
-    signNumber = s;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////
-
-BigReal ::BigReal()
+BigReal :: BigReal()
 {
     Before_point.setNumber("0");
     After_point.setNumber("0");
     signNumber = '+';
+    dot_pos = 1;
 }
-BigReal ::BigReal(string number)
+BigReal :: BigReal(string number)
 {
     string Int, Float;
     if (checkValidInput(number))
@@ -354,12 +63,12 @@ BigReal ::BigReal(string number)
         exit(1);
     }
 }
-bool BigReal ::checkValidInput(string input)
+bool BigReal :: checkValidInput(string input)
 {
     regex validInput("[-+]?[0-9]+(.[0-9]+)?");
     return regex_match(input, validInput);
 }
-BigReal ::BigReal(double realNumber)
+BigReal :: BigReal(double realNumber)
 {
     string number;
     number = to_string(realNumber);
@@ -416,25 +125,32 @@ BigReal ::BigReal(double realNumber)
         exit(1);
     }
 }
-BigReal ::BigReal(BigDecimalInt bigInteger)
+BigReal :: BigReal(BigDecimalInt bigInteger)
 {
     Before_point.setNumber(bigInteger.getNumber());
     dot_pos = bigInteger.getNumber().size();
     After_point.setNumber("0");
+    if(bigInteger.sign() == 1){
+        signNumber = '+';
+    }
+    else{
+        signNumber = '-';
+    }
 }
-BigReal ::BigReal(BigReal &&other) { // moving constructor
+BigReal :: BigReal(BigReal &&other) { // moving constructor
     Before_point = other.Before_point;
     After_point = other.After_point;
     dot_pos = Before_point.size();
+    signNumber = other.signNumber;
 }
-BigReal ::BigReal(const BigReal &other)
+BigReal :: BigReal(const BigReal &other)
 {
     Before_point = other.Before_point;
     After_point = other.After_point;
     dot_pos = other.dot_pos;
     signNumber = other.signNumber;
 }
-BigReal &BigReal::operator=(BigReal other)
+BigReal &BigReal :: operator=(BigReal other)
 {
     Before_point = other.Before_point;
     After_point = other.After_point;
@@ -442,16 +158,18 @@ BigReal &BigReal::operator=(BigReal other)
     signNumber = other.signNumber;
     return *this;
 }
-BigReal &BigReal::operator=(BigReal &&other){
+BigReal &BigReal :: operator=(BigReal &&other){
     this->Before_point = other.Before_point;
     this->After_point = other.After_point;
+    this->signNumber = other.signNumber;
+    this->dot_pos = other.dot_pos;
     return *this;
 }
-int BigReal ::size()
+int BigReal :: size()
 {
     return Before_point.size() + After_point.size();
 }
-int BigReal ::sign()
+int BigReal :: sign()
 {
     if (signNumber == '+')
     {
@@ -462,15 +180,15 @@ int BigReal ::sign()
         return 0;
     }
 }
-string BigReal ::getRNumber()
+string BigReal :: getRNumber()
 {
     return signNumber + Before_point.getNumber() + '.' + After_point.getNumber();
 }
-BigReal BigReal ::operator+(BigReal anotherReal)
+BigReal BigReal :: operator+(BigReal anotherReal)
 {
     BigDecimalInt Whole_Number1, Whole_Number2, res;
     BigReal Final_Result;
-    int dot_position = 0, c =0;
+    int dot_position = 0, c = 0;
     string before_dot1, before_dot2, after_dot1, after_dot2;
 
     before_dot1 = Before_point.getNumber();
@@ -583,7 +301,7 @@ BigReal BigReal ::operator+(BigReal anotherReal)
     }
     return Final_Result;
 }
-BigReal BigReal ::operator-(BigReal anotherReal)
+BigReal BigReal :: operator-(BigReal anotherReal)
 {
     BigDecimalInt Whole_Number1, Whole_Number2, res;
     BigReal Final_Result;
@@ -685,6 +403,84 @@ BigReal BigReal ::operator-(BigReal anotherReal)
     }
     return Final_Result;
 }
+bool BigReal :: operator<(BigReal anotherReal)
+{
+
+    if (Before_point < anotherReal.Before_point)
+    {
+        return true;
+    }
+    else if (Before_point == anotherReal.Before_point)
+    {
+        BigDecimalInt *smallest = &After_point;
+        if (anotherReal.After_point.getNumber().length() < After_point.getNumber().length())
+        {
+            smallest = &anotherReal.After_point;
+        }
+        int difference = After_point.getNumber().length() - anotherReal.After_point.getNumber().length();
+        difference = ((difference < 0) ? difference * -1 : difference);
+        for (int i = 0; i < difference; i++)
+        {
+            smallest->setNumber(smallest->getNumber() + "0");
+        }
+        After_point.setSign(((Before_point.sign() == 1) ? '+' : '-'));
+        anotherReal.After_point.setSign(((anotherReal.Before_point.sign() == 1) ? '+' : '-'));
+        return After_point < anotherReal.After_point;
+    }
+    return false;
+}
+bool BigReal :: operator>(BigReal anotherReal)
+{
+    if (Before_point > anotherReal.Before_point)
+    {
+        return true;
+    }
+    else if (Before_point == anotherReal.Before_point)
+    {
+        BigDecimalInt *smallest = &After_point;
+        int difference = After_point.getNumber().length() - anotherReal.After_point.getNumber().length();
+        if (anotherReal.After_point.getNumber().length() < After_point.getNumber().length())
+        {
+            smallest = &anotherReal.After_point;
+        }
+        difference = ((difference < 0) ? difference * -1 : difference);
+        for (int i = 0; i < difference; i++)
+        {
+            smallest->setNumber(smallest->getNumber() + "0");
+        }
+        After_point.setSign(((Before_point.sign() == 1) ? '+' : '-'));
+        anotherReal.After_point.setSign(((anotherReal.Before_point.sign() == 1) ? '+' : '-'));
+        return After_point > anotherReal.After_point;
+    }
+    return false;
+}
+bool BigReal :: operator==(BigReal anotherReal)
+{
+    string b1, b2,a1,a2;
+    b1 = Before_point.getNumber();b2 = anotherReal.Before_point.getNumber();
+    a1 = After_point.getNumber();a2 = anotherReal.After_point.getNumber();
+    while(b1[0] == '0' && b1.length() > 1){
+        b1.erase(0, 1);
+    }
+    while(b2[0] == '0' && b2.length() > 1){
+        b2.erase(0, 1);
+    }
+    while(a1[a1.length()-1] == '0' && a1.length() > 1){
+        a1.erase(0, 1);
+    }
+    while(a2[a2.length()-1] == '0' && a2.length() > 1){
+        a2.erase(0, 1);
+    }
+    Before_point.setNumber(b1);
+    anotherReal.Before_point.setNumber(b2);
+    After_point.setNumber(a1);
+    anotherReal.After_point.setNumber(a2);
+    if (Before_point == anotherReal.Before_point && After_point == anotherReal.After_point)
+    {
+        return true;
+    }
+    return false;
+}
 ostream &operator<<(ostream &out, BigReal num)
 {
     string b, a;
@@ -779,65 +575,7 @@ istream &operator>>(istream &in, BigReal &num)
     }
     return in;
 }
-bool BigReal ::operator<(BigReal anotherReal)
-{
 
-    if (Before_point < anotherReal.Before_point)
-    {
-        return true;
-    }
-    else if (Before_point == anotherReal.Before_point)
-    {
-        BigDecimalInt *smallest = &After_point;
-        if (anotherReal.After_point.getNumber().length() < After_point.getNumber().length())
-        {
-            smallest = &anotherReal.After_point;
-        }
-        int difference = After_point.getNumber().length() - anotherReal.After_point.getNumber().length();
-        difference = ((difference < 0) ? difference * -1 : difference);
-        for (int i = 0; i < difference; i++)
-        {
-            smallest->setNumber(smallest->getNumber() + "0");
-        }
-        After_point.setSign(((Before_point.sign() == 1) ? '+' : '-'));
-        anotherReal.After_point.setSign(((anotherReal.Before_point.sign() == 1) ? '+' : '-'));
-        return After_point < anotherReal.After_point;
-    }
-    return false;
-}
-bool BigReal ::operator>(BigReal anotherReal)
-{
-    if (Before_point > anotherReal.Before_point)
-    {
-        return true;
-    }
-    else if (Before_point == anotherReal.Before_point)
-    {
-        BigDecimalInt *smallest = &After_point;
-        int difference = After_point.getNumber().length() - anotherReal.After_point.getNumber().length();
-        if (anotherReal.After_point.getNumber().length() < After_point.getNumber().length())
-        {
-            smallest = &anotherReal.After_point;
-        }
-        difference = ((difference < 0) ? difference * -1 : difference);
-        for (int i = 0; i < difference; i++)
-        {
-            smallest->setNumber(smallest->getNumber() + "0");
-        }
-        After_point.setSign(((Before_point.sign() == 1) ? '+' : '-'));
-        anotherReal.After_point.setSign(((anotherReal.Before_point.sign() == 1) ? '+' : '-'));
-        return After_point > anotherReal.After_point;
-    }
-    return false;
-}
-bool BigReal ::operator==(BigReal anotherReal)
-{
-    if (Before_point == anotherReal.Before_point && After_point == anotherReal.After_point)
-    {
-        return true;
-    }
-    return false;
-}
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
@@ -944,4 +682,5 @@ int options(int choice){
     else{
         cout << "\n____________Thanks for using our Program____________\n";
     }
+    return 0;
 }
