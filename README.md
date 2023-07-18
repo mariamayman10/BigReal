@@ -1,5 +1,5 @@
 # BigReal
-The BigReal Calculator is a C++ program that provides arithmetic calculations for precise real numbers using the BigReal class. This program is console-based and allows users to perform calculations with high precision and accuracy.
+The BigReal Calculator is a C++ program that provides arithmetic calculations for precise real numbers using a non-builtin BigReal class. This program is console-based and allows users to perform calculations with high precision and accuracy.
 
 Features: 
 
